@@ -1,0 +1,84 @@
+<html>
+<head>
+<title></title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type ="text/javascript" src="/socket.io/socket.io.js"></script>
+   
+    <!-- <link rel="stylesheet" type="text/css" href"/stylesheets/style.css"> -->
+    <!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+<!-- <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous"> -->
+
+
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+
+<!-- Optional theme -->
+<!-- <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous"> -->
+
+<!-- Latest compiled and minified JavaScript -->
+<!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script> -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+
+<!-- <script src="./node_modules/bootstrap/dist/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script> -->
+
+<!-- <script src="./node_modules/jquery/dist/jquery/jquery.min.js"></script> -->
+    <title>Quoting Dojo</title>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <h1 style="text-align:center;">Job Details</h1>
+            <form id="editJob" action="/jobs/<%=thejob[0].id%>" method="POST">
+             <div class="col-sm-12">
+                <div style="margin-top:5px;" class="well"><h3>Edit <%=thejob[0].title%></h3>
+                    
+     
+                
+                        <label> Title:</label> <input type="text" class="form-control" value="<%=thejob[0].title%>" name="title" id="title">
+                          <label> Rate: </label><input class="form-control" type="number" value="<%=thejob[0].rate%>" name="rate" id="rate">
+                          <label>Pay Type:</label> <select id="type"  class="form-control" name="type">
+                            <option value="Hourly">Hourly</option>
+                            <option value="By Project">By Project</option>
+                        </select>
+                          <label> Description:</label><textarea class="form-control" name="description" id="description"><%=thejob[0].description%></textarea>
+                         <label> Start On: </label><input class="form-control" type="date" value="<%=dateInfo.start%>" name="start" id="start">
+                        
+                         <label> Due on: </label><input class="form-control"  type="date"  value="<%=dateInfo.due%>" name="due" id="due">
+                         <label> Posted by:</label><input class="form-control" type="text" value="<%=thejob[0].poster%>" name="poster" id="poster"><br><br>
+                       <button type="submit" class="btn btn-success">Save Changes</button>
+                   </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+$(document).ready(function() {
+var socket = io.connect();
+$('.liked').click(function(event){
+    event.preventDefault();
+    console.log($ (this).data('id'));
+    var id = {id : $( this ).data('id')};
+    console.log("got id",id);
+    // $.ajax({
+    //  type: 'POST',
+    //  url: 'like',
+    //  data: id,
+    //  success: function(response){
+    //      console.log(response);
+    //  }
+
+    // })
+
+    socket.emit("new_like",id)
+})
+
+socket.on("like_update",function(data){
+    console.log('got like update',data);
+    $('#'+data.update.id).html(data.update.newcount+'&nbsp');
+ })
+})
+</script>
+</html>

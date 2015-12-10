@@ -1,0 +1,81 @@
+<html>
+<head>
+<title></title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type ="text/javascript" src="/socket.io/socket.io.js"></script>
+   
+    <!-- <link rel="stylesheet" type="text/css" href"/stylesheets/style.css"> -->
+    <!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+<!-- <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous"> -->
+
+
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+
+<!-- Optional theme -->
+<!-- <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous"> -->
+
+<!-- Latest compiled and minified JavaScript -->
+<!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script> -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+
+<!-- <script src="./node_modules/bootstrap/dist/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script> -->
+
+<!-- <script src="./node_modules/jquery/dist/jquery/jquery.min.js"></script> -->
+    <title>Job Dashboard</title>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <h1 style="text-align:center;">See all Jobs</h1>
+            <a href="/jobs/new" class="btn btn-primary pull-right" style="margin-bottom:10px;">Add a new job</a>
+            <div class="col-sm-12">
+                <% for (x in alljobs) {%>
+                <div style="margin-top:5px;" class="well"><h3><a href="jobs/<%=alljobs[x].id%>"><%=alljobs[x].title%> for $<%=alljobs[x].rate%> </a></h3>
+                    <h4><%=alljobs[x].description%> </h4>
+                    <h5>Start by: <%=alljobs[x].start%></h5>
+                    <h5>Due by: <%=alljobs[x].due%></h5>
+                    <h6>Payment type: <%=alljobs[x].type%></h6>
+                <p style="text-align:center;">Added by <%=alljobs[x].poster%> at <%=alljobs[x].created_at%><p><br>
+                    <a href="" data-id="<%=alljobs[x].id%>" class="glyphicon glyphicon-thumbs-up pull-right liked"> </a>&nbsp
+                  <!--   <span id="<%=alljobs[x].id%>" class="likes pull-right"> <%=alljobs[x].likes%> &nbsp</span> -->
+                  <form method="post" action="/jobs/<%=alljobs[x].id%>/destroy">
+                    <input type="hidden" name="id" value="<%=alljobs[x].id%>">
+                    <button class="btn btn-danger" type="submit">Delete Job</button>
+                  </form>
+                </div>
+                <%}%>
+            <div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+$(document).ready(function() {
+var socket = io.connect();
+$('.liked').click(function(event){
+    event.preventDefault();
+    console.log($ (this).data('id'));
+    var id = {id : $( this ).data('id')};
+    console.log("got id",id);
+    // $.ajax({
+    //  type: 'POST',
+    //  url: 'like',
+    //  data: id,
+    //  success: function(response){
+    //      console.log(response);
+    //  }
+
+    // })
+
+    socket.emit("new_like",id)
+})
+
+socket.on("like_update",function(data){
+    console.log('got like update',data);
+    $('#'+data.update.id).html(data.update.newcount+'&nbsp');
+ })
+})
+</script>
+</html>
